@@ -3,21 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql" // PostgreSQL ідеально підходить для цього
-  url      = env("DATABASE_URL")
-}
-
-// --- ЕНУМЕРАТОРИ ---
-enum Role {
-  HEAD_TEACHER // Керівник / Директор
-  TEACHER      // Вчитель
-  STUDENT      // Учень
-}
-
-enum Attendance {
-  PRESENT
-  ABSENT      // Відсутній
-  LATE        // Запізнення
+  provider = "sqlite"
+  url      = "file:./dev.db"
 }
 
 // --- КОРИСТУВАЧІ ТА КЛАСИ ---
@@ -27,26 +14,26 @@ model User {
   passwordHash String
   firstName    String
   lastName     String
-  role         Role
+  role         String   @default("STUDENT") // SQLite не вміє enum, тому String
 
-  // Для учнів: прив'язка до класу (наприклад, "10-А")
+  // Для учнів: прив'язка до класу
   classId      String?
   class        Class?   @relation(fields: [classId], references: [id])
 
   // Зв'язки
-  taughtSubjects    TeacherSubject[] // Для вчителів
-  enrolledSubjects  StudentSubject[] // Для учнів
+  taughtSubjects    TeacherSubject[]
+  enrolledSubjects  StudentSubject[]
   givenGrades       Gradebook[]      @relation("TeacherGrades")
   receivedGrades    Gradebook[]      @relation("StudentGrades")
-  achievements      Achievement[]    // ** Бонус: Досягнення
+  achievements      Achievement[]
 
   createdAt    DateTime @default(now())
 }
 
 model Class {
   id       String   @id @default(uuid())
-  name     String   @unique // Наприклад "10-А", "11-Б"
-  students User[]   // Учні цього класу
+  name     String   @unique
+  students User[]
   schedule Schedule[]
 }
 
@@ -60,11 +47,10 @@ model Subject {
   students    StudentSubject[]
   grades      Gradebook[]
   schedule    Schedule[]
-  materials   Material[] // ** Бонус: Навчальні матеріали
-  quizzes     Quiz[]     // ** Бонус: Тести
+  materials   Material[]
+  quizzes     Quiz[]
 }
 
-// Зв'язок "Вчитель - Предмет" (Хто що викладає)
 model TeacherSubject {
   id        String  @id @default(uuid())
   teacherId String
@@ -76,7 +62,6 @@ model TeacherSubject {
   @@unique([teacherId, subjectId])
 }
 
-// Зв'язок "Учень - Предмет" (Хто що вивчає)
 model StudentSubject {
   id        String  @id @default(uuid())
   studentId String
@@ -88,25 +73,24 @@ model StudentSubject {
   @@unique([studentId, subjectId])
 }
 
-// --- ЖУРНАЛ ОЦІНОК ТА ВІДВІДУВАНІСТЬ ---
+// --- ЖУРНАЛ ОЦІНОК ---
 model Gradebook {
   id          String     @id @default(uuid())
   studentId   String
   teacherId   String
   subjectId   String
-  date        DateTime   // Дата уроку
+  date        DateTime
   
-  grade       Int?       // Оцінка (може бути null, якщо просто відсутній)
-  attendance  Attendance @default(PRESENT) // Присутність/Відсутність/Запізнення
+  grade       Int?
+  attendance  String     @default("PRESENT") // SQLite не вміє enum, тому String
 
   student     User       @relation("StudentGrades", fields: [studentId], references: [id])
   teacher     User       @relation("TeacherGrades", fields: [teacherId], references: [id])
   subject     Subject    @relation(fields: [subjectId], references: [id])
 
-  @@unique([studentId, subjectId, date]) // Один запис на учня по предмету в один день
+  @@unique([studentId, subjectId, date])
 }
 
-// --- РОЗКЛАД (КАЛЕНДАР) ---
 model Schedule {
   id          String   @id @default(uuid())
   classId     String
@@ -118,14 +102,10 @@ model Schedule {
   subject     Subject  @relation(fields: [subjectId], references: [id])
 }
 
-// ==========================================
-// БОНУСНІ СУТНОСТІ (Для додаткових балів **)
-// ==========================================
-
 model Achievement {
   id          String   @id @default(uuid())
   userId      String
-  title       String   // "Переможець олімпіади з математики"
+  title       String
   date        DateTime
   user        User     @relation(fields: [userId], references: [id])
 }
@@ -134,8 +114,8 @@ model Material {
   id          String   @id @default(uuid())
   subjectId   String
   title       String
-  type        String   // "PDF", "VIDEO", "WORD"
-  url         String   // Посилання на файл чи відео
+  type        String
+  url         String
   subject     Subject  @relation(fields: [subjectId], references: [id])
 }
 
@@ -151,7 +131,7 @@ model Question {
   id          String   @id @default(uuid())
   quizId      String
   text        String
-  isMultiple  Boolean  // Чи кілька правильних відповідей
+  isMultiple  Boolean
   quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   answers     Answer[]
 }
