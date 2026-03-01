@@ -1,4 +1,4 @@
-const { PrismaClient } = require('@prisma/client');
+import { PrismaClient } from '@prisma/client';
 import bcrypt from 'bcrypt';
 
 const prisma = new PrismaClient();
@@ -14,11 +14,11 @@ async function main() {
       passwordHash: passwordHash,
       firstName: 'Ivan',
       lastName: 'Director',
-      role: 'HEAD_TEACHER', // Або просто ADMIN, якщо змінили назву в enum
+      role: 'HEAD_TEACHER', 
     },
   });
 
-  console.log('✅ Базу даних заповнено (Admin: admin@school.com / Pass: admin123)');
+  console.log('✅ Базу заповнено! Email: admin@school.com | Pass: admin123');
 }
 
 main()
