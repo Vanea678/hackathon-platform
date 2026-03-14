@@ -2,8 +2,9 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { AuthController } from './controllers/AuthController';
-import { DashboardController } from './controllers/DashboardController';
-
+import { DashboardController } from './controllers/DashboardController'; // Має бути у { }
+import { GradeController } from './controllers/GradeController';
+const gradeController = new GradeController();
 // 1. Спочатку завантажуємо налаштування
 dotenv.config();
 
@@ -12,7 +13,7 @@ const app = express();
 // 2. Налаштування (Middlewares) - Мають бути ПЕРЕД маршрутами
 app.use(cors());
 app.use(express.json());
-
+app.post('/api/grades/save', (req, res) => gradeController.saveGrade(req, res));
 // 3. Ініціалізація контролерів
 const authController = new AuthController();
 const dashboardController = new DashboardController();

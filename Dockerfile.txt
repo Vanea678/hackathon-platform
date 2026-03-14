@@ -1,0 +1,27 @@
+# Використовуємо стабільну версію Node.js
+FROM node:20-alpine
+
+# Створюємо робочу директорію
+WORKDIR /app
+
+# Копіюємо файли залежностей
+COPY package*.json ./
+COPY prisma ./prisma/
+
+# Встановлюємо залежності
+RUN npm install
+
+# Копіюємо весь код
+COPY . .
+
+# Генеруємо Prisma Client
+RUN npx prisma generate
+
+# Збираємо TypeScript (якщо потрібно)
+RUN npm run build || true
+
+# Відкриваємо порт
+EXPOSE 3000
+
+# Команда для запуску (використовуємо ts-node для турніру)
+CMD ["npx", "ts-node", "src/index.ts"]
