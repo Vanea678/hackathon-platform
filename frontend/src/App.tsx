@@ -1,13 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
-import TeachersPage from './pages/TeachersPage';
-import SubjectsPage from './pages/SubjectsPage';
-import JournalPage from './pages/JournalPage';
-import StudentsPage from './pages/StudentsPage'; // 1. ДОДАЙ ЦЕЙ ІМПОРТ
 import MainLayout from './components/MainLayout';
-import SchedulePage from './pages/SchedulePage';
+import LeaderboardPage from './pages/LeaderboardPage'; // Наш новий головний файл
 
+// Тимчасові заглушки для інших сторінок, щоб сайт не видавав помилку
+const Placeholder = ({ title }: { title: string }) => (
+  <div className="flex items-center justify-center h-[70vh] text-slate-400 text-2xl font-bold">
+    🚧 Сторінка "{title}" в розробці...
+  </div>
+);
 
 function App() {
   return (
@@ -17,14 +19,15 @@ function App() {
         
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/teachers" element={<TeachersPage />} />
-          <Route path="/subjects" element={<SubjectsPage />} />
-          <Route path="/journal" element={<JournalPage />} />
-          <Route path="/students" element={<StudentsPage />} /> {/* 2. ДОДАЙ ЦЕЙ РЯДОК */}
-          <Route path="/schedule" element={<SchedulePage />} />
+          <Route path="/tournaments" element={<Placeholder title="Турніри" />} />
+          <Route path="/teams" element={<Placeholder title="Команди" />} />
+          <Route path="/submissions" element={<Placeholder title="Сабміти" />} />
+          <Route path="/evaluation" element={<Placeholder title="Оцінювання" />} />
+          
+          {/* Найголовніша сторінка */}
+          <Route path="/leaderboard" element={<LeaderboardPage />} />
         </Route>
 
-        {/* ОСЬ ЦЕЙ РЯДОК ВІДПРАВЛЯЄ ТЕБЕ НА ЛОГІН, ЯКЩО ШЛЯХУ /students НЕМАЄ ВИЩЕ */}
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     </Router>

@@ -4,85 +4,42 @@ import bcrypt from 'bcrypt';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('⏳ Починаю генерацію бази даних...');
-
+  console.log('⏳ Заповнюю базу для Турніру...');
   const defaultPassword = await bcrypt.hash('123456', 10);
 
-  // 1. СТВОРЮЄМО ДИРЕКТОРА ТА ВЧИТЕЛЯ
+  // 1. Організатор (Адмін)
   await prisma.user.upsert({
-    where: { email: 'admin@school.com' },
+    where: { email: 'admin@hackathon.com' },
     update: {},
-    create: { email: 'admin@school.com', passwordHash: defaultPassword, firstName: 'Ivan', lastName: 'Director', role: 'HEAD_TEACHER' },
+    create: { email: 'admin@hackathon.com', passwordHash: defaultPassword, fullName: 'Головний Організатор', role: 'ADMIN' },
   });
 
+  // 2. Журі
   await prisma.user.upsert({
-    where: { email: 'teacher@school.com' },
+    where: { email: 'jury@hackathon.com' },
     update: {},
-    create: { email: 'teacher@school.com', passwordHash: defaultPassword, firstName: 'Олена', lastName: 'Петренко', role: 'TEACHER' },
+    create: { email: 'jury@hackathon.com', passwordHash: defaultPassword, fullName: 'Суддя Максим', role: 'JURY' },
   });
 
-  // 2. СТВОРЮЄМО ПРЕДМЕТИ
-  const subjects = [
-    { name: 'Математика', description: 'Алгебра та геометрія' },
-    { name: 'Програмування', description: 'Основи Web-розробки' },
-    { name: 'Історія', description: 'Історія України' },
-    { name: 'Англійська мова', description: 'Рівень B1-B2' }
-  ];
+  // 3. Капітан Команди
+  await prisma.user.upsert({
+    where: { email: 'team@hackathon.com' },
+    update: {},
+    create: { email: 'team@hackathon.com', passwordHash: defaultPassword, fullName: 'Іван (Капітан)', role: 'TEAM' },
+  });
 
-  for (const sub of subjects) {
-    await prisma.subject.upsert({ where: { name: sub.name }, update: {}, create: sub });
-  }
+  // 4. Тестовий турнір
+  await prisma.tournament.create({
+    data: {
+      title: 'Star for Life Hackathon 2026',
+      description: 'Головний ІТ-турнір для підлітків України.',
+      status: 'RUNNING',
+      startDate: new Date(),
+      regEndDate: new Date(new Date().getTime() + 86400000 * 7), // +7 днів
+    }
+  });
 
-  // 3. СТВОРЮЄМО КЛАСИ
-  const classNames = ['10-А', '10-Б', '11-А'];
-  const classIds: Record<string, string> = {};
-
-  for (const name of classNames) {
-    const newClass = await prisma.class.upsert({
-      where: { name },
-      update: {},
-      create: { name }
-    });
-    classIds[name] = newClass.id; // Зберігаємо ID класу, щоб додати туди учнів
-  }
-
-  // 4. ГЕНЕРУЄМО УЧНІВ ТА РОЗПОДІЛЯЄМО ПО КЛАСАХ
-  const studentsToCreate = [
-    { f: 'Андрій', l: 'Шевченко', e: 'andriy@school.com', c: '10-А' },
-    { f: 'Марія', l: 'Коваль', e: 'maria@school.com', c: '10-А' },
-    { f: 'Олександр', l: 'Зінченко', e: 'alex@school.com', c: '10-А' },
-    { f: 'Софія', l: 'Ткаченко', e: 'sofia@school.com', c: '10-Б' },
-    { f: 'Максим', l: 'Бондаренко', e: 'max@school.com', c: '10-Б' },
-    { f: 'Дарина', l: 'Мельник', e: 'daryna@school.com', c: '10-Б' },
-    { f: 'Іван', l: 'Франко', e: 'ivan@school.com', c: '11-А' },
-    { f: 'Вікторія', l: 'Бойко', e: 'vika@school.com', c: '11-А' },
-    { f: 'Дмитро', l: 'Кравченко', e: 'dima@school.com', c: '11-А' },
-    { f: 'Анна', l: 'Олійник', e: 'anna@school.com', c: '11-А' }
-  ];
-
-  let studentCount = 0;
-  for (const s of studentsToCreate) {
-    await prisma.user.upsert({
-      where: { email: s.e },
-      update: {},
-      create: {
-        email: s.e,
-        firstName: s.f,
-        lastName: s.l,
-        passwordHash: defaultPassword,
-        role: 'STUDENT',
-        classId: classIds[s.c] // Призначаємо учня в конкретний клас
-      }
-    });
-    studentCount++;
-  }
-
-  console.log('✅ Базу успішно згенеровано!');
-  console.log(`🎓 Додано класів: ${classNames.length}`);
-  console.log(`👨‍🎓 Додано учнів: ${studentCount}`);
-  console.log('🔑 Універсальний пароль для всіх: 123456');
+  console.log('✅ Базу Турніру успішно створено!');
 }
 
-main()
-  .catch((e) => console.error(e))
-  .finally(async () => await prisma.$disconnect());
+main().catch(console.error).finally(() => prisma.$disconnect());
