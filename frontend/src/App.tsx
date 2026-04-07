@@ -2,9 +2,11 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
 import MainLayout from './components/MainLayout';
-import LeaderboardPage from './pages/LeaderboardPage'; // Наш новий головний файл
+import LeaderboardPage from './pages/LeaderboardPage';
+import TeamsPage from './pages/TeamsPage';           // Додано
+import TournamentsPage from './pages/TournamentsPage'; // Додано
 
-// Тимчасові заглушки для інших сторінок, щоб сайт не видавав помилку
+// Заглушки для сторінок, які ми зробимо завтра
 const Placeholder = ({ title }: { title: string }) => (
   <div className="flex items-center justify-center h-[70vh] text-slate-400 text-2xl font-bold">
     🚧 Сторінка "{title}" в розробці...
@@ -19,12 +21,12 @@ function App() {
         
         <Route element={<MainLayout />}>
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/tournaments" element={<Placeholder title="Турніри" />} />
-          <Route path="/teams" element={<Placeholder title="Команди" />} />
-          <Route path="/submissions" element={<Placeholder title="Сабміти" />} />
-          <Route path="/evaluation" element={<Placeholder title="Оцінювання" />} />
+          <Route path="/tournaments" element={<TournamentsPage />} /> {/* Підключено */}
+          <Route path="/teams" element={<TeamsPage />} />             {/* Підключено */}
           
-          {/* Найголовніша сторінка */}
+          <Route path="/submissions" element={<Placeholder title="Сабміти (Подача робіт)" />} />
+          <Route path="/evaluation" element={<Placeholder title="Оцінювання (Для Журі)" />} />
+          
           <Route path="/leaderboard" element={<LeaderboardPage />} />
         </Route>
 
