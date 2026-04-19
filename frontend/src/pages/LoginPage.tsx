@@ -56,6 +56,17 @@ function LoginPage() {
             <ShieldCheck className="w-5 h-5" /> Увійти
           </button>
         </form>
+        <div className="mt-6 text-center">
+          <p className="text-indigo-200/50 text-sm">
+              Немає команди?{' '}
+            <button 
+            onClick={() => navigate('/register')} 
+            className="text-indigo-400 hover:text-indigo-300 font-bold underline transition-colors"
+            >
+              Зареєструватися зараз
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
