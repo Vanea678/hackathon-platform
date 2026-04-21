@@ -4,6 +4,10 @@ import dotenv from 'dotenv';
 import { AuthController } from './controllers/AuthController';
 import { DashboardController } from './controllers/DashboardController'; // Має бути у { }
 import { GradeController } from './controllers/GradeController';
+import { SubmissionController } from './controllers/SubmissionController';
+
+
+
 const gradeController = new GradeController();
 // 1. Спочатку завантажуємо налаштування
 dotenv.config();
@@ -17,6 +21,8 @@ app.post('/api/grades/save', (req, res) => gradeController.saveGrade(req, res));
 // 3. Ініціалізація контролерів
 const authController = new AuthController();
 const dashboardController = new DashboardController();
+
+app.post('/api/auth/register', (req, res) => authController.register(req, res));
 
 // 4. Маршрути (Routes)
 app.get('/', (req, res) => {
@@ -34,3 +40,7 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Сервер успішно запущено на http://localhost:${PORT}`);
 });
+
+const submissionController = new SubmissionController();
+
+app.post('/api/submissions', (req, res) => submissionController.submit(req, res));

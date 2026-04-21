@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Users, Trophy, Send, LogOut, Code2 } from 'lucide-react';
-import axios from 'axios';
+import { Users, Trophy, Send, LogOut, Zap, Activity, Globe } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 
 function DashboardPage() {
@@ -9,107 +8,95 @@ function DashboardPage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    // В реальному проєкті тут буде запит на статистику турніру
-    // Поки що ставимо статичні дані для презентації
     setData({
-      stats: { teams: 12, submissions: 8, juries: 3 },
-      tournaments: [
-        { id: 1, title: 'Star for Life Hackathon 2026', status: 'RUNNING' }
-      ],
-      juries: [
-        { id: 1, fullName: 'Суддя Максим', role: 'JURY', email: 'jury@hackathon.com' }
+      stats: { teams: 12, tournaments: 1, submissions: 8 },
+      recentTeams: [
+        { name: 'Code Wizards', status: 'Online' },
+        { name: 'Byte Me', status: 'Away' }
       ]
     });
   }, []);
 
-  const handleLogout = () => {
-    localStorage.clear();
-    navigate('/login');
-  };
-
-  if (!data) return <div className="min-h-screen bg-slate-900 text-white flex items-center justify-center">Завантаження...</div>;
+  if (!data) return <div className="min-h-screen bg-black flex items-center justify-center text-purple-500 font-black">INITIALIZING...</div>;
 
   return (
-    <div className="min-h-screen bg-[#0f172a] text-slate-200 font-sans">
-      {/* Навігація */}
-      <nav className="border-b border-white/10 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <Code2 className="text-indigo-400 w-8 h-8" />
-            <span className="text-xl font-bold text-white tracking-tight">Hackathon Hub</span>
+    <div className="min-h-screen bg-black text-slate-200 font-sans">
+      {/* Header із неоновою рискою як на EvaluationPage */}
+      <header className="mb-12 relative flex justify-between items-start">
+        <div className="relative">
+          <div className="absolute -left-4 top-0 w-1 h-12 bg-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)]"></div>
+          <h1 className="text-4xl font-black text-white tracking-tight px-2 uppercase">SYSTEM <span className="text-purple-500">OVERVIEW</span></h1>
+          <p className="text-slate-500 mt-1 ml-2 text-[10px] uppercase tracking-[0.3em] font-bold">Welcome back, {user.fullName || 'Operator'}</p>
+        </div>
+      </header>
+
+      {/* Bento Grid Stats */}
+      <div className="grid grid-cols-12 gap-6">
+        
+        {/* Картка 1: Команди (Велика) */}
+        <div className="col-span-12 md:col-span-4 bg-[#0a0a0a] border border-white/5 p-8 rounded-[2rem] hover:border-purple-500/30 transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="p-3 bg-purple-500/10 rounded-xl text-purple-400"><Users size={24} /></div>
+            <span className="text-4xl font-black text-white">{data.stats.teams}</span>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="text-right hidden sm:block">
-              <p className="text-sm font-bold text-white">{user.fullName || 'Гість'}</p>
-              <p className="text-xs text-slate-400 uppercase tracking-widest">{user.role || 'USER'}</p>
+          <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest">Active Entities</h3>
+          <p className="text-xs text-slate-600 mt-2">Команди, що пройшли валідацію</p>
+        </div>
+
+        {/* Картка 2: Турніри */}
+        <div className="col-span-12 md:col-span-4 bg-[#0a0a0a] border border-white/5 p-8 rounded-[2rem] hover:border-blue-500/30 transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="p-3 bg-blue-500/10 rounded-xl text-blue-400"><Globe size={24} /></div>
+            <span className="text-4xl font-black text-white">{data.stats.tournaments}</span>
+          </div>
+          <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest">Live Events</h3>
+          <p className="text-xs text-slate-600 mt-2">Турніри у активній фазі</p>
+        </div>
+
+        {/* Картка 3: Сабміти */}
+        <div className="col-span-12 md:col-span-4 bg-[#0a0a0a] border border-white/5 p-8 rounded-[2rem] hover:border-emerald-500/30 transition-all group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="p-3 bg-emerald-500/10 rounded-xl text-emerald-400"><Send size={24} /></div>
+            <span className="text-4xl font-black text-white">{data.stats.submissions}</span>
+          </div>
+          <h3 className="text-sm font-black text-slate-500 uppercase tracking-widest">Deployments</h3>
+          <p className="text-xs text-slate-600 mt-2">Роботи подані на перевірку</p>
+        </div>
+
+        {/* Великий блок: Активний статус */}
+        <div className="col-span-12 lg:col-span-8 bg-[#0a0a0a] border border-white/5 p-8 rounded-[3rem] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-8 text-purple-500/20 group-hover:text-purple-500/40 transition-colors">
+                <Zap size={120} fill="currentColor" />
             </div>
-            <button onClick={handleLogout} className="p-2 hover:bg-red-500/20 rounded-full text-slate-400 hover:text-red-400 transition-all">
-              <LogOut size={20} />
-            </button>
-          </div>
-        </div>
-      </nav>
-
-      <main className="max-w-7xl mx-auto px-4 py-8 space-y-8">
-        {/* Картки статистики */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <StatCard icon={<Users className="text-blue-400" />} label="Команд-учасниць" value={data.stats.teams} gradient="from-blue-500/10 to-transparent" />
-          <StatCard icon={<Trophy className="text-indigo-400" />} label="Активних турнірів" value={data.tournaments.length} gradient="from-indigo-500/10 to-transparent" />
-          <StatCard icon={<Send className="text-emerald-400" />} label="Зданих робіт" value={data.stats.submissions} gradient="from-emerald-500/10 to-transparent" />
-        </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          {/* Активні турніри */}
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-              🏆 Активні Турніри
-            </h2>
-            <div className="space-y-3">
-              {data.tournaments.map((t: any) => (
-                <div key={t.id} className="p-4 bg-slate-800/40 rounded-2xl border border-white/5 flex items-center justify-between hover:border-indigo-500/30 transition-all cursor-pointer">
-                  <p className="font-semibold text-slate-100">{t.title}</p>
-                  <span className="px-3 py-1 bg-emerald-500/10 text-emerald-400 text-xs font-bold rounded-full uppercase tracking-wider">
-                    {t.status}
-                  </span>
+            <div className="relative z-10">
+                <h2 className="text-2xl font-bold text-white mb-6 flex items-center gap-2">
+                    <Activity className="text-purple-500" /> Current Hackathon Status
+                </h2>
+                <div className="space-y-4">
+                    <div className="p-5 bg-white/5 border border-white/5 rounded-2xl flex justify-between items-center hover:bg-white/10 transition-all">
+                        <span className="font-bold text-slate-200">Star for Life 2026</span>
+                        <span className="px-3 py-1 bg-purple-500/20 text-purple-400 text-[10px] font-black rounded-full uppercase border border-purple-500/30">Running</span>
+                    </div>
                 </div>
-              ))}
             </div>
-          </div>
+        </div>
 
-          {/* Список журі */}
-          <div className="bg-white/5 border border-white/10 rounded-3xl p-6">
-            <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
-              ⚖️ Склад Журі
-            </h2>
-            <div className="space-y-3">
-              {data.juries.map((j: any) => (
-                <div key={j.id} className="p-4 bg-slate-800/40 rounded-2xl border border-white/5 flex items-center gap-4">
-                  <div className="w-10 h-10 bg-indigo-500/20 rounded-full flex items-center justify-center text-indigo-400 font-bold">
-                    {j.fullName.substring(0, 2).toUpperCase()}
-                  </div>
-                  <div>
-                    <p className="font-semibold text-slate-100">{j.fullName}</p>
-                    <p className="text-xs text-slate-500">{j.email}</p>
-                  </div>
+        {/* Малий блок: Останні дії */}
+        <div className="col-span-12 lg:col-span-4 bg-purple-600 p-1 rounded-[3rem]">
+            <div className="bg-[#050505] h-full w-full rounded-[2.9rem] p-8 flex flex-col justify-between">
+                <h2 className="font-black text-white uppercase text-xs tracking-[0.2em] mb-6">System Logs</h2>
+                <div className="space-y-4">
+                    {data.recentTeams.map((t: any, i: number) => (
+                        <div key={i} className="flex items-center justify-between text-xs font-mono">
+                            <span className="text-slate-400">{t.name}</span>
+                            <span className="text-purple-500 font-bold">{t.status}</span>
+                        </div>
+                    ))}
                 </div>
-              ))}
+                <button className="mt-8 text-[10px] font-black uppercase text-purple-400 hover:text-white transition-colors">View All Logs →</button>
             </div>
-          </div>
         </div>
-      </main>
-    </div>
-  );
-}
 
-function StatCard({ icon, label, value, gradient }: any) {
-  return (
-    <div className={`bg-white/5 border border-white/10 p-6 rounded-3xl relative overflow-hidden bg-gradient-to-br ${gradient}`}>
-      <div className="flex items-center justify-between relative z-10">
-        <div>
-          <p className="text-slate-400 text-sm font-medium uppercase tracking-wider">{label}</p>
-          <p className="text-4xl font-black text-white mt-1">{value}</p>
-        </div>
-        <div className="p-3 bg-white/5 rounded-2xl">{icon}</div>
       </div>
     </div>
   );

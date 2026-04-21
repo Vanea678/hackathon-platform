@@ -1,15 +1,55 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/UserService';
-import { EmailService } from '../services/EmailService'; // 1. ДОДАЙ ІМПОРТ
+import { EmailService } from '../services/EmailService'; // ДОДАНО
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { PrismaClient } from '@prisma/client';
 
 const userService = new UserService();
-const emailService = new EmailService(); // 2. СТВОРИ ЕКЗЕМПЛЯР СЕРВІСУ
+const emailService = new EmailService(); // ДОДАНО
+const prisma = new PrismaClient();
 
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key';
 
 export class AuthController {
+  
+  // 1. РЕЄСТРАЦІЯ
+  async register(req: Request, res: Response) {
+    const { email, password, fullName, teamName } = req.body;
+
+    try {
+      const existingUser = await userService.findByEmail(email);
+      if (existingUser) {
+        return res.status(400).json({ message: 'Цей email вже зареєстровано' });
+      }
+
+      const hashedPassword = await bcrypt.hash(password, 10);
+
+      // Створюємо користувача та команду (транзакція)
+      const user = await prisma.user.create({
+        data: {
+          email,
+          passwordHash: hashedPassword,
+          fullName,
+          role: 'TEAM',
+          team: {
+            create: {
+              name: teamName,
+              // Прив'язуємо до першого знайденого турніру
+              tournament: { connect: { id: (await prisma.tournament.findFirst())?.id } }
+            }
+          }
+        }
+      });
+
+      return res.status(201).json({ message: 'Команду успішно зареєстровано!', userId: user.id });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: 'Помилка при реєстрації' });
+    }
+  }
+
+  // 2. ВХІД
   async login(req: Request, res: Response) {
     const { email, password } = req.body;
 
@@ -22,16 +62,14 @@ export class AuthController {
 
       const token = jwt.sign({ userId: user.id, role: user.role }, JWT_SECRET, { expiresIn: '1d' });
 
-      // 3. ТЕСТОВЕ ВІДПРАВЛЕННЯ ЛИСТА
-      // Якщо заходить Адмін, відправляємо лист на ТВОЮ пошту
+      // Відправка тестового листа для Адміна
       if (user.role === 'ADMIN') {
-        // Ми примусово шлемо на твою пошту, щоб ти точно отримав лист
-        emailService.sendRegistrationEmail('vaneaignatiuc0@gmail.com', 'Super Coders', 'Star for Life Hackathon');
+        await emailService.sendRegistrationEmail('vaneaignatiuc0@gmail.com', 'Admin System', 'Hackathon Hub');
       }
 
       return res.json({ 
         token, 
-        user: { id: user.id, email: user.email, role: user.role, firstName: user.fullName } 
+        user: { id: user.id, email: user.email, role: user.role, fullName: user.fullName } 
       });
 
     } catch (error) {
