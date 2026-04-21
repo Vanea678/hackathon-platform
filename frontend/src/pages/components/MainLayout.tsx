@@ -4,11 +4,10 @@ import Sidebar from './Sidebar';
 
 function MainLayout() {
   return (
-    <div className="flex min-h-screen bg-[#0f172a]">
+    <div className="flex min-h-screen bg-black"> {/* Змінено на чисто чорний */}
       <Sidebar />
-      {/* Контент справа від Sidebar (додаємо відступ ml-64) */}
-      <main className="flex-1 ml-64 p-8 overflow-y-auto">
-        <div className="max-w-6xl mx-auto">
+      <main className="flex-1 ml-64 p-10 overflow-y-auto selection:bg-purple-500/30">
+        <div className="max-w-7xl mx-auto">
           <Outlet /> 
         </div>
       </main>

@@ -1,56 +1,99 @@
-import React, { useState } from 'react';
-import { ShieldCheck, Award, Monitor, Cpu, Send } from 'lucide-react';
+import { Trophy, Star, Activity, Zap, Search } from 'lucide-react';
 
-function EvaluationPage() {
-  const [scoreTech, setScoreTech] = useState(80);
-  const [scoreFunc, setScoreFunc] = useState(85);
-  const [scoreUI, setScoreUI] = useState(90);
+const mockData = [
+  { id: 1, team: 'Code Wizards', score: 98.2, latency: '1.2s', passRate: '100%', status: 'Leading' },
+  { id: 2, team: 'Byte Me', score: 94.5, latency: '1.5s', passRate: '98%', status: 'Stable' },
+  { id: 3, team: 'Ctrl Alt Defeat', score: 88.0, latency: '0.9s', passRate: '92%', status: 'Warning' },
+  { id: 4, team: 'Syntax Errors', score: 72.4, latency: '2.1s', passRate: '85%', status: 'Stable' },
+];
 
-  const total = Math.round((scoreTech + scoreFunc + scoreUI) / 3);
-
+function LeaderboardPage() {
   return (
-    <div className="max-w-4xl mx-auto space-y-8 pb-20">
-      <div className="text-center">
-        <h1 className="text-3xl font-black text-white uppercase tracking-tighter flex items-center justify-center gap-3">
-          <ShieldCheck className="text-indigo-400" size={36} /> Оцінювання проєкту
-        </h1>
-        <p className="text-slate-400 mt-2">Виставлення балів для команди: <span className="text-white font-bold text-lg italic">Code Wizards</span></p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <ScoreSlider label="Технічна частина" icon={<Cpu size={20}/>} value={scoreTech} onChange={setScoreTech} color="blue" />
-        <ScoreSlider label="Функціональність" icon={<Award size={20}/>} value={scoreFunc} onChange={setScoreFunc} color="emerald" />
-        <ScoreSlider label="UX / UI Дизайн" icon={<Monitor size={20}/>} value={scoreUI} onChange={setScoreUI} color="purple" />
-      </div>
-
-      <div className="bg-white/5 border border-white/10 p-8 rounded-3xl text-center backdrop-blur-xl relative overflow-hidden">
-        <div className="relative z-10">
-          <p className="text-slate-400 uppercase text-sm font-bold tracking-widest">Середній бал</p>
-          <h2 className="text-7xl font-black text-white mt-2">{total}</h2>
-          <button className="mt-8 bg-indigo-500 hover:bg-indigo-400 text-white font-black px-10 py-4 rounded-2xl transition-all shadow-lg flex items-center gap-3 mx-auto">
-            <Send size={20} /> Підтвердити оцінку
-          </button>
+    <div className="min-h-screen bg-black text-white p-8 font-sans selection:bg-purple-500/30">
+      {/* Header Section */}
+      <div className="flex justify-between items-end mb-12 border-b border-white/10 pb-8">
+        <div>
+          <div className="flex items-center gap-2 text-purple-500 mb-2">
+            <Zap size={18} fill="currentColor" />
+            <span className="text-xs font-black uppercase tracking-[0.3em]">Live Metrics</span>
+          </div>
+          <h1 className="text-5xl font-bold tracking-tighter">Leaderboard</h1>
+        </div>
+        <div className="flex items-center gap-4 bg-white/5 border border-white/10 px-4 py-2 rounded-lg">
+          <Search size={18} className="text-slate-500" />
+          <input placeholder="Search teams..." className="bg-transparent outline-none text-sm w-48" />
         </div>
       </div>
-    </div>
-  );
-}
 
-function ScoreSlider({ label, value, onChange, color, icon }: any) {
-  const colors: any = { blue: "accent-blue-500", emerald: "accent-emerald-500", purple: "accent-purple-500" };
-  return (
-    <div className="bg-white/5 border border-white/10 p-6 rounded-3xl space-y-4">
-      <div className="flex items-center gap-2 text-slate-300 font-bold uppercase text-xs">
-        {icon} {label}
+      {/* Main Table */}
+      <div className="overflow-hidden border border-white/10 rounded-xl bg-[#050505]">
+        <table className="w-full text-left border-collapse">
+          <thead>
+            <tr className="bg-white/5 text-slate-500 text-[10px] uppercase tracking-[0.2em] font-black">
+              <th className="px-6 py-5">Rank</th>
+              <th className="px-6 py-5">Team Entity</th>
+              <th className="px-6 py-5 text-center text-purple-400">Final Score</th>
+              <th className="px-6 py-5 text-center">Avg Latency</th>
+              <th className="px-6 py-5 text-center">Success Rate</th>
+              <th className="px-6 py-5 text-right">Status</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-white/5">
+            {mockData.map((item, index) => (
+              <tr key={item.id} className="hover:bg-white/[0.02] transition-all group">
+                <td className="px-6 py-6 text-slate-500 font-mono text-sm">
+                  0{index + 1}
+                </td>
+                <td className="px-6 py-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-8 h-8 rounded border border-purple-500/30 bg-purple-500/10 flex items-center justify-center text-purple-400 text-xs font-bold">
+                      {item.team.substring(0,1)}
+                    </div>
+                    <span className="font-bold text-slate-200 group-hover:text-white transition-colors">
+                      {item.team}
+                    </span>
+                  </div>
+                </td>
+                <td className="px-6 py-6">
+                  <div className="flex flex-col items-center gap-1">
+                    <span className="text-xl font-black text-white">{item.score}</span>
+                    <div className="w-24 h-1 bg-slate-800 rounded-full overflow-hidden">
+                      <div className="h-full bg-purple-500" style={{ width: `${item.score}%` }}></div>
+                    </div>
+                  </div>
+                </td>
+                <td className="px-6 py-6 text-center font-mono text-slate-400 text-sm">
+                  {item.latency}
+                </td>
+                <td className="px-6 py-6 text-center font-mono text-slate-400 text-sm">
+                  {item.passRate}
+                </td>
+                <td className="px-6 py-6 text-right">
+                  <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider border ${
+                    item.status === 'Leading' ? 'bg-purple-500/10 border-purple-500/50 text-purple-400' : 
+                    item.status === 'Warning' ? 'bg-yellow-500/10 border-yellow-500/50 text-yellow-400' :
+                    'bg-slate-500/10 border-white/10 text-slate-400'
+                  }`}>
+                    <Activity size={10} />
+                    {item.status}
+                  </span>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
-      <div className="text-3xl font-black text-white">{value}</div>
-      <input 
-        type="range" min="0" max="100" value={value} 
-        onChange={(e) => onChange(parseInt(e.target.value))}
-        className={`w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer ${colors[color]}`}
-      />
+
+      {/* Footer Info */}
+      <footer className="mt-8 flex justify-between items-center text-slate-600 text-[10px] uppercase font-bold tracking-widest">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-1"><div className="w-2 h-2 bg-purple-500 rounded-full"></div> System Online</div>
+          <div className="flex items-center gap-1"><div className="w-2 h-2 bg-white/20 rounded-full"></div> Database Synced</div>
+        </div>
+        <span>Generated by Hackathon Engine v1.0.4</span>
+      </footer>
     </div>
   );
 }
 
-export default EvaluationPage;
+export default LeaderboardPage;

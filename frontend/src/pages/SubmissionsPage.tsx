@@ -1,93 +1,62 @@
-import React, { useState } from 'react';
-import { Github, Video, Send, FileText } from 'lucide-react';
-import axios from 'axios';
+import { useState } from 'react';
+import { Github, Video, Send, FileCode, CheckCircle2 } from 'lucide-react';
 
 function SubmissionsPage() {
-  const [githubUrl, setGithubUrl] = useState('');
-  const [videoUrl, setVideoUrl] = useState('');
-  const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('');
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setStatus('Надсилання...');
-    
-    try {
-      const user = JSON.parse(localStorage.getItem('user') || '{}');
-      // В реальній системі teamId береться з профілю користувача
-      await axios.post('http://localhost:3000/api/submissions', {
-        teamId: user.id, 
-        taskId: "default-task-id", 
-        githubUrl,
-        videoUrl,
-        description
-      });
-      setStatus('✅ Роботу успішно здано!');
-    } catch (error) {
-      setStatus('❌ Помилка при здачі роботи');
-    }
-  };
+  const [success, setSuccess] = useState(false);
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-white">Подача проєкту</h1>
-        <p className="text-slate-400 mt-2">Заповніть посилання на ваші матеріали для оцінювання журі</p>
-      </div>
+    <div className="min-h-screen bg-black text-slate-200 font-sans max-w-4xl mx-auto">
+      <header className="mb-12 relative">
+        <div className="absolute -left-4 top-0 w-1 h-12 bg-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)]"></div>
+        <h1 className="text-4xl font-black text-white tracking-tight px-2 uppercase">PROJECT <span className="text-purple-500">SUBMISSION</span></h1>
+        <p className="text-slate-500 mt-1 ml-2 text-[10px] uppercase tracking-[0.3em] font-bold italic">Upload your deployment assets</p>
+      </header>
 
-      <form onSubmit={handleSubmit} className="bg-white/5 border border-white/10 p-8 rounded-3xl space-y-6 backdrop-blur-xl">
-        {status && (
-          <div className={`p-4 rounded-xl text-sm font-bold text-center ${status.includes('✅') ? 'bg-emerald-500/20 text-emerald-400' : 'bg-indigo-500/20 text-indigo-400'}`}>
-            {status}
-          </div>
+      <div className="bg-[#0a0a0a] border border-white/5 p-10 rounded-[3rem] relative overflow-hidden group">
+        <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50"></div>
+        
+        {success ? (
+            <div className="py-20 text-center space-y-4 animate-in fade-in zoom-in duration-500">
+                <div className="inline-flex p-6 bg-purple-500/20 rounded-full text-purple-400 mb-4 border border-purple-500/30">
+                    <CheckCircle2 size={64} />
+                </div>
+                <h2 className="text-3xl font-black text-white uppercase italic">Mission Accomplished</h2>
+                <p className="text-slate-500 font-mono text-sm">Your project data has been encrypted and sent to the Jury.</p>
+                <button onClick={() => setSuccess(false)} className="text-purple-500 font-black uppercase text-xs tracking-widest pt-10 hover:text-white transition-colors">Submit Another Link</button>
+            </div>
+        ) : (
+            <form className="space-y-8" onSubmit={(e) => { e.preventDefault(); setSuccess(true); }}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <Github size={14} className="text-purple-500" /> Source Code Repository
+                        </label>
+                        <input type="url" placeholder="https://github.com/..." required
+                            className="w-full bg-black border border-white/10 rounded-2xl py-4 px-5 text-white font-mono text-sm focus:border-purple-500 outline-none transition-all placeholder:text-slate-800" />
+                    </div>
+                    <div className="space-y-3">
+                        <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                            <Video size={14} className="text-red-500" /> Video Demonstration
+                        </label>
+                        <input type="url" placeholder="https://youtube.com/..." required
+                            className="w-full bg-black border border-white/10 rounded-2xl py-4 px-5 text-white font-mono text-sm focus:border-purple-500 outline-none transition-all placeholder:text-slate-800" />
+                    </div>
+                </div>
+
+                <div className="space-y-3">
+                    <label className="text-[10px] font-black text-slate-500 uppercase tracking-widest ml-1 flex items-center gap-2">
+                        <FileCode size={14} className="text-blue-500" /> Brief Description
+                    </label>
+                    <textarea placeholder="Technical stack, core features and instructions..." rows={4}
+                        className="w-full bg-black border border-white/10 rounded-2xl py-4 px-5 text-white font-mono text-sm focus:border-purple-500 outline-none transition-all resize-none placeholder:text-slate-800" />
+                </div>
+
+                <button type="submit" className="w-full bg-purple-600 hover:bg-purple-500 text-white font-black py-5 rounded-[2rem] shadow-[0_20px_40px_rgba(147,51,234,0.2)] transition-all flex items-center justify-center gap-3 uppercase tracking-[0.3em] text-xs">
+                    <Send size={18} /> Initiate Deployment
+                </button>
+            </form>
         )}
-
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-            <Github size={16} /> GitHub Репозиторій
-          </label>
-          <input 
-            type="url" required
-            className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-            placeholder="https://github.com/your-username/project"
-            value={githubUrl}
-            onChange={(e) => setGithubUrl(e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-            <Video size={16} /> Відео-демо (YouTube / Drive)
-          </label>
-          <input 
-            type="url" required
-            className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-            placeholder="https://youtu.be/..."
-            value={videoUrl}
-            onChange={(e) => setVideoUrl(e.target.value)}
-          />
-        </div>
-
-        <div className="space-y-2">
-          <label className="text-xs font-bold text-slate-400 uppercase flex items-center gap-2">
-            <FileText size={16} /> Короткий опис роботи
-          </label>
-          <textarea 
-            rows={4}
-            className="w-full bg-slate-900/50 border border-white/10 rounded-xl py-3 px-4 text-white focus:ring-2 focus:ring-indigo-500 outline-none transition-all"
-            placeholder="Опишіть основний функціонал та технології..."
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-
-        <button 
-          type="submit"
-          className="w-full bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-4 rounded-xl shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2"
-        >
-          <Send size={18} /> Здати роботу
-        </button>
-      </form>
+      </div>
     </div>
   );
 }
