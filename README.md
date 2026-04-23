@@ -1,3 +1,32 @@
+🏆 Hackathon Hub — Professional Tournament Engine
+Hackathon Hub — це високотехнологічна екосистема для організації та проведення ІТ-турнірів. Платформа дозволяє автоматизувати весь шлях: від реєстрації команд до професійного оцінювання журі та формування динамічної таблиці лідерів.
+Статус проєкту: Production-ready 🚀
+Дизайн-концепція: Deep Tech / Bento Grid UI
+✨ Ключові особливості
+🛡️ Multi-Role System: Чітке розділення доступу для Адміністраторів, Команд та Журі.
+📊 Bento-Grid Dashboard: Сучасна головна сторінка з Live-статистикою турніру.
+⚖️ Professional Evaluation: Спеціалізований інтерфейс для журі з оцінюванням за технічними та функціональними критеріями (0-100 балів).
+🥇 Live Leaderboard: Рейтинг команд у реальному часі з медалями та кубками для лідерів.
+📩 Real-time Notifications: Інтегрована система Gmail-сповіщень про успішну реєстрацію та зміну статусів.
+📱 Responsive & Fast: Оптимізовано для всіх пристроїв завдяки React 19 та Tailwind CSS 4.
+🛠 Технологічний стек
+Frontend
+React 19 (Vite)
+Tailwind CSS 4 (Modern CSS engine)
+Lucide React (High-end iconography)
+React Router 7 (Advanced routing)
+Backend
+Node.js & TypeScript
+Express.js (Server framework)
+Prisma ORM (Database management)
+SQLite (Zero-config database)
+JWT & Bcrypt (Security & Encryption)
+Nodemailer (Email engine)
+🚀 Інструкція із запуску (для Журі)
+Ми максимально спростили процес розгортання. Проєкт використовує SQLite, тому вам не потрібно встановлювати сторонні бази даних.
+1. Встановлення залежностей
+code
+Bash
 # 🏆 Hackathon Hub — Professional Tournament Engine
 
 **Hackathon Hub** — це високотехнологічна екосистема для організації та проведення ІТ-турнірів. Платформа дозволяє автоматизувати весь шлях: від реєстрації команд до професійного оцінювання журі та формування динамічної таблиці лідерів.
