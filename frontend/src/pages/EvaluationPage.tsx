@@ -1,99 +1,99 @@
-import { Trophy, Star, Activity, Zap, Search } from 'lucide-react';
+import { useEffect, useState } from 'react';
+import { ShieldCheck, Github, ExternalLink, Cpu, Layout, MessageSquare, Send } from 'lucide-react';
+import axios from 'axios';
 
-const mockData = [
-  { id: 1, team: 'Code Wizards', score: 98.2, latency: '1.2s', passRate: '100%', status: 'Leading' },
-  { id: 2, team: 'Byte Me', score: 94.5, latency: '1.5s', passRate: '98%', status: 'Stable' },
-  { id: 3, team: 'Ctrl Alt Defeat', score: 88.0, latency: '0.9s', passRate: '92%', status: 'Warning' },
-  { id: 4, team: 'Syntax Errors', score: 72.4, latency: '2.1s', passRate: '85%', status: 'Stable' },
-];
+function EvaluationPage() {
+  const [assignments, setAssignments] = useState<any[]>([]);
+  const [selectedSub, setSelectedSub] = useState<any>(null);
+  
+  // Стан для балів
+  const [scores, setScores] = useState({ backend: 80, db: 80, frontend: 80, mustHave: 80, bugs: 80, ux: 80 });
 
-function LeaderboardPage() {
+  useEffect(() => {
+    // Завантажуємо тільки ті роботи, що призначені поточному журі
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    axios.get(`http://localhost:3000/api/evaluation/my-assignments?juryId=${user.id}`)
+      .then(res => setAssignments(res.data));
+  }, []);
+
+  const submitScore = async () => {
+    const total = Object.values(scores).reduce((a, b) => a + b, 0) / 6;
+    alert(`Проєкт оцінено на ${total.toFixed(1)} балів! ✅`);
+  };
+
   return (
-    <div className="min-h-screen bg-black text-white p-8 font-sans selection:bg-purple-500/30">
-      {/* Header Section */}
-      <div className="flex justify-between items-end mb-12 border-b border-white/10 pb-8">
-        <div>
-          <div className="flex items-center gap-2 text-purple-500 mb-2">
-            <Zap size={18} fill="currentColor" />
-            <span className="text-xs font-black uppercase tracking-[0.3em]">Live Metrics</span>
+    <div className="min-h-screen text-slate-200 font-sans">
+      <header className="mb-12 relative">
+        <div className="absolute -left-4 top-0 w-1 h-12 bg-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)]"></div>
+        <h1 className="text-4xl font-black text-white tracking-tight px-2 uppercase">JURY <span className="text-purple-500">ASSESSMENT</span></h1>
+        <p className="text-slate-500 mt-1 ml-2 text-[10px] uppercase tracking-[0.3em] font-bold italic">Evaluation Phase • Assigned Projects</p>
+      </header>
+
+      <div className="grid grid-cols-12 gap-8">
+        {/* Список призначених робіт (Bento) */}
+        <div className="col-span-12 lg:col-span-4 space-y-4">
+          <h2 className="text-xs font-black text-slate-500 uppercase tracking-widest ml-2 mb-4">Your Queue</h2>
+          {[1, 2, 3].map((i) => ( // Тимчасовий цикл для дизайну
+            <div key={i} onClick={() => setSelectedSub(i)} className={`p-6 rounded-[2rem] border transition-all cursor-pointer ${selectedSub === i ? 'bg-purple-600/10 border-purple-500/50' : 'bg-[#0a0a0a] border-white/5 hover:border-white/20'}`}>
+              <h3 className="font-bold text-white uppercase tracking-tighter">Team Alpha 0{i}</h3>
+              <p className="text-[10px] text-slate-500 font-mono mt-1 italic">Status: Pending Review</p>
+            </div>
+          ))}
+        </div>
+
+        {/* Форма оцінювання (Активна лише якщо обрана робота) */}
+        <div className="col-span-12 lg:col-span-8 bg-[#0a0a0a] border border-white/5 p-10 rounded-[3rem] relative overflow-hidden">
+          <div className="absolute top-0 right-0 p-10 opacity-5"><ShieldCheck size={180} /></div>
+          
+          <div className="relative z-10 space-y-10">
+            <div className="flex justify-between items-center border-b border-white/5 pb-8">
+                <div>
+                    <h2 className="text-2xl font-bold text-white">Project Evaluation</h2>
+                    <div className="flex gap-4 mt-4">
+                        <a href="#" className="flex items-center gap-2 text-xs font-bold text-purple-400 hover:text-white transition-all bg-purple-500/5 px-3 py-1.5 rounded-lg border border-purple-500/20"><Github size={14}/> Code</a>
+                        <a href="#" className="flex items-center gap-2 text-xs font-bold text-blue-400 hover:text-white transition-all bg-blue-500/5 px-3 py-1.5 rounded-lg border border-blue-500/20"><ExternalLink size={14}/> Live Demo</a>
+                    </div>
+                </div>
+                <div className="text-center">
+                    <p className="text-[10px] font-black text-slate-500 uppercase">Current Avg</p>
+                    <p className="text-4xl font-black text-purple-500 tracking-tighter">84.2</p>
+                </div>
+            </div>
+
+            {/* Слайдери Оцінок */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+              <ScoreItem label="Backend Quality" val={scores.backend} onChange={(v:any) => setScores({...scores, backend: v})} icon={<Cpu size={16}/>}/>
+              <ScoreItem label="Functionality" val={scores.mustHave} onChange={(v:any) => setScores({...scores, mustHave: v})} icon={<Layout size={16}/>}/>
+              <ScoreItem label="Database Structure" val={scores.db} onChange={(v:any) => setScores({...scores, db: v})} icon={<Cpu size={16}/>}/>
+              <ScoreItem label="UI / UX Design" val={scores.ux} onChange={(v:any) => setScores({...scores, ux: v})} icon={<Layout size={16}/>}/>
+            </div>
+
+            <div className="space-y-4">
+                <label className="text-[10px] font-black text-slate-500 uppercase flex items-center gap-2"><MessageSquare size={14}/> Jury Comments</label>
+                <textarea className="w-full bg-black border border-white/10 rounded-2xl p-4 text-sm font-mono focus:border-purple-500 outline-none h-24" placeholder="Technical feedback for the team..."></textarea>
+            </div>
+
+            <button onClick={submitScore} className="w-full bg-white text-black font-black py-5 rounded-[2rem] uppercase tracking-[0.3em] text-xs hover:bg-purple-500 hover:text-white transition-all flex items-center justify-center gap-3">
+               <Send size={18}/> Finalize Assessment
+            </button>
           </div>
-          <h1 className="text-5xl font-bold tracking-tighter">Leaderboard</h1>
-        </div>
-        <div className="flex items-center gap-4 bg-white/5 border border-white/10 px-4 py-2 rounded-lg">
-          <Search size={18} className="text-slate-500" />
-          <input placeholder="Search teams..." className="bg-transparent outline-none text-sm w-48" />
         </div>
       </div>
-
-      {/* Main Table */}
-      <div className="overflow-hidden border border-white/10 rounded-xl bg-[#050505]">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-white/5 text-slate-500 text-[10px] uppercase tracking-[0.2em] font-black">
-              <th className="px-6 py-5">Rank</th>
-              <th className="px-6 py-5">Team Entity</th>
-              <th className="px-6 py-5 text-center text-purple-400">Final Score</th>
-              <th className="px-6 py-5 text-center">Avg Latency</th>
-              <th className="px-6 py-5 text-center">Success Rate</th>
-              <th className="px-6 py-5 text-right">Status</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-white/5">
-            {mockData.map((item, index) => (
-              <tr key={item.id} className="hover:bg-white/[0.02] transition-all group">
-                <td className="px-6 py-6 text-slate-500 font-mono text-sm">
-                  0{index + 1}
-                </td>
-                <td className="px-6 py-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded border border-purple-500/30 bg-purple-500/10 flex items-center justify-center text-purple-400 text-xs font-bold">
-                      {item.team.substring(0,1)}
-                    </div>
-                    <span className="font-bold text-slate-200 group-hover:text-white transition-colors">
-                      {item.team}
-                    </span>
-                  </div>
-                </td>
-                <td className="px-6 py-6">
-                  <div className="flex flex-col items-center gap-1">
-                    <span className="text-xl font-black text-white">{item.score}</span>
-                    <div className="w-24 h-1 bg-slate-800 rounded-full overflow-hidden">
-                      <div className="h-full bg-purple-500" style={{ width: `${item.score}%` }}></div>
-                    </div>
-                  </div>
-                </td>
-                <td className="px-6 py-6 text-center font-mono text-slate-400 text-sm">
-                  {item.latency}
-                </td>
-                <td className="px-6 py-6 text-center font-mono text-slate-400 text-sm">
-                  {item.passRate}
-                </td>
-                <td className="px-6 py-6 text-right">
-                  <span className={`inline-flex items-center gap-1.5 px-2 py-1 rounded text-[10px] font-black uppercase tracking-wider border ${
-                    item.status === 'Leading' ? 'bg-purple-500/10 border-purple-500/50 text-purple-400' : 
-                    item.status === 'Warning' ? 'bg-yellow-500/10 border-yellow-500/50 text-yellow-400' :
-                    'bg-slate-500/10 border-white/10 text-slate-400'
-                  }`}>
-                    <Activity size={10} />
-                    {item.status}
-                  </span>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Footer Info */}
-      <footer className="mt-8 flex justify-between items-center text-slate-600 text-[10px] uppercase font-bold tracking-widest">
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-1"><div className="w-2 h-2 bg-purple-500 rounded-full"></div> System Online</div>
-          <div className="flex items-center gap-1"><div className="w-2 h-2 bg-white/20 rounded-full"></div> Database Synced</div>
-        </div>
-        <span>Generated by Hackathon Engine v1.0.4</span>
-      </footer>
     </div>
   );
 }
 
-export default LeaderboardPage;
+function ScoreItem({ label, val, onChange, icon }: any) {
+    return (
+        <div className="space-y-4">
+            <div className="flex justify-between items-center">
+                <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex items-center gap-2">{icon} {label}</span>
+                <span className="text-lg font-bold text-white">{val}</span>
+            </div>
+            <input type="range" min="0" max="100" value={val} onChange={(e) => onChange(parseInt(e.target.value))} 
+                   className="w-full h-1 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-purple-500" />
+        </div>
+    )
+}
+
+export default EvaluationPage;

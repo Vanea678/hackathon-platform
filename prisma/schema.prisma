@@ -24,71 +24,112 @@ model Tournament {
   id             String   @id @default(uuid())
   title          String
   description    String
-  status         String   @default("DRAFT") // 'DRAFT', 'REGISTRATION', 'RUNNING', 'FINISHED'
+  rules          String?  // Правила (Markdown або текст)
+  status         String   @default("DRAFT") // DRAFT, REGISTRATION, RUNNING, FINISHED
   
-  startDate      DateTime
-  regEndDate     DateTime
+  startDate      DateTime // Дата старту турніру
+  regStartDate   DateTime // Початок реєстрації
+  regEndDate     DateTime // Кінець реєстрації
+  
+  maxTeams       Int?     // Макс. кількість команд (опціонально)
+  roundsCount    Int      @default(1) // Кількість раундів
 
   teams          Team[]
   tasks          Task[]
+  createdAt      DateTime @default(now())
 }
 
-// 3. Команди (Реєстрація)
 model Team {
   id              String   @id @default(uuid())
   name            String
   tournamentId    String
-  captainEmail    String   @unique
+  captainEmail    String
+  captainName     String
   
-  membersList     String   @default("[]") // Список учасників команди
+  organization    String?  // Місто/школа
+  socialLink      String?  // Telegram/Discord
   
-  tournament      Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  tournament      Tournament @relation(fields: [tournamentId], references: [id])
+  members         TeamMember[] // Список учасників
   submissions     Submission[]
+
+  createdAt      DateTime @default(now())
+
+  // Захист від дублювання назви команди в одному турнірі
+  @@unique([tournamentId, name])
+  // Захист від дублювання капітана
+  @@unique([tournamentId, captainEmail])
 }
 
-// 4. Завдання (Раунди)
+model TeamMember {
+  id        String @id @default(uuid())
+  teamId    String
+  fullName  String
+  email     String
+  
+  team      Team   @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  // Email має бути унікальним в межах однієї команди (вимога ТЗ)
+  @@unique([teamId, email])
+}
+
 model Task {
-  id                  String   @id @default(uuid())
-  tournamentId        String
-  title               String
-  description         String
-  mustHaveChecklist   String   @default("[]") 
+  id                String   @id @default(uuid())
+  tournamentId      String
+  title             String
+  description       String   // Функціонал
+  techRequirements  String   // Стек, БД, деплой
+  mustHaveChecklist String   @default("[]") // JSON масив вимог
   
-  deadline            DateTime
+  status            String   @default("DRAFT") // DRAFT, ACTIVE, CLOSED, EVALUATED
+  startTime         DateTime
+  deadline          DateTime
+  materialsUrl      String?  // Посилання на доп. матеріали
   
-  tournament          Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
-  submissions         Submission[]
+  tournament        Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
+  submissions       Submission[]
 }
 
-// 5. Сабміти (Подані роботи)
 model Submission {
   id              String   @id @default(uuid())
   teamId          String
   taskId          String
   
   githubUrl       String
-  videoUrl        String
-  description     String?
+  videoUrl        String   // Посилання на YouTube/Drive
+  liveDemoUrl     String?  // Опціонально
+  description     String?  // 1-2 абзаци про проєкт
   
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
   team            Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   task            Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
   evaluations     Evaluation[]
 
+  // Одна команда може здати лише одну роботу на одне завдання
   @@unique([teamId, taskId]) 
 }
 
-// 6. Оцінки Журі
 model Evaluation {
   id              String   @id @default(uuid())
   submissionId    String
   juryId          String
   
-  scoreTech       Int?     // Якість коду (0-100)
-  scoreFunc       Int?     // Функціональність (0-100)
-  scoreUI         Int?     // UI/UX (0-100)
-  totalScore      Float?
+  // I. Технічна частина (0-100)
+  scoreBackend    Int?
+  scoreDB         Int?
+  scoreFrontend   Int?
+
+  // II. Функціональність (0-100)
+  scoreMustHave   Int?
+  scoreStability  Int? // Відсутність багів
+  scoreUX         Int?
+
   comment         String?
-  
+  totalScore      Float?   // Вираховується автоматично
+  status          String   @default("PENDING") // PENDING, COMPLETED
+
   submission      Submission @relation(fields: [submissionId], references: [id], onDelete: Cascade)
   jury            User       @relation(fields: [juryId], references: [id], onDelete: Cascade)
 
