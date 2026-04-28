@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Medal, Trophy, Star, ChevronDown, ChevronUp, Activity, Target, Layout } from 'lucide-react';
+import { Trophy, Medal, Activity, Target, Layout } from 'lucide-react';
 import axios from 'axios';
 
 function LeaderboardPage() {
@@ -7,11 +7,32 @@ function LeaderboardPage() {
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/leaderboard')
-      .then(res => setLeaderboard(res.data))
-      .catch(err => console.error(err));
-  }, []);
+    // Функція для завантаження даних
+    const fetchLeaderboard = () => {
+      axios.get('http://localhost:3000/api/leaderboard')
+        .then(res => {
+          // Якщо дані відрізняються від поточних, оновлюємо стан
+          // Це зробить "магію" realtime-оновлення на екрані
+          setLeaderboard(prev => {
+            if (JSON.stringify(prev) !== JSON.stringify(res.data)) {
+              return res.data;
+            }
+            return prev;
+          });
+        })
+        .catch(err => console.error(err));
+    };
 
+    // Завантажуємо перший раз відразу
+    fetchLeaderboard();
+
+    // ВАЖЛИВО: Налаштовуємо Polling (запит кожні 3 секунди)
+    // Це створює ефект Realtime
+    const intervalId = setInterval(fetchLeaderboard, 3000);
+
+    // Очищаємо таймер, коли користувач йде зі сторінки
+    return () => clearInterval(intervalId);
+  }, []);
   return (
     <div className="min-h-screen text-slate-200 pb-20">
       <header className="mb-12 relative flex justify-between items-end">
@@ -20,8 +41,14 @@ function LeaderboardPage() {
           <h1 className="text-4xl font-black text-white tracking-tight px-2 uppercase italic">RANKING <span className="text-purple-500">SYSTEM</span></h1>
           <p className="text-slate-500 mt-1 ml-2 text-[10px] uppercase tracking-[0.3em] font-bold">Final Tournament Standing</p>
         </div>
-        <div className="px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg text-[10px] font-black uppercase tracking-widest animate-pulse">
-            Evaluation Live
+        
+        {/* ІНДИКАТОР REALTIME */}
+        <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg">
+            <span className="relative flex h-3 w-3">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            </span>
+            <span className="text-[10px] font-black uppercase tracking-widest">Live Updates</span>
         </div>
       </header>
 
