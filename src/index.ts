@@ -5,6 +5,7 @@ import { AuthController } from './controllers/AuthController';
 import { DashboardController } from './controllers/DashboardController'; // Має бути у { }
 import { GradeController } from './controllers/GradeController';
 import { SubmissionController } from './controllers/SubmissionController';
+import { EventController } from './controllers/EventController';
 
 
 
@@ -44,3 +45,8 @@ app.listen(PORT, () => {
 const submissionController = new SubmissionController();
 
 app.post('/api/submissions', (req, res) => submissionController.submit(req, res));
+
+
+const eventController = new EventController();
+app.get('/api/events', (req, res) => eventController.getEvents(req, res));
+app.post('/api/events', (req, res) => eventController.createEvent(req, res));
