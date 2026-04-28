@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Trophy, Medal, Activity, Target, Layout } from 'lucide-react';
+import { Trophy, Medal, Activity, Target, Layout, Download } from 'lucide-react'; // Додали Download
 import axios from 'axios';
 
 function LeaderboardPage() {
@@ -7,12 +7,9 @@ function LeaderboardPage() {
   const [expandedTeam, setExpandedTeam] = useState<string | null>(null);
 
   useEffect(() => {
-    // Функція для завантаження даних
     const fetchLeaderboard = () => {
       axios.get('http://localhost:3000/api/leaderboard')
         .then(res => {
-          // Якщо дані відрізняються від поточних, оновлюємо стан
-          // Це зробить "магію" realtime-оновлення на екрані
           setLeaderboard(prev => {
             if (JSON.stringify(prev) !== JSON.stringify(res.data)) {
               return res.data;
@@ -23,35 +20,73 @@ function LeaderboardPage() {
         .catch(err => console.error(err));
     };
 
-    // Завантажуємо перший раз відразу
     fetchLeaderboard();
-
-    // ВАЖЛИВО: Налаштовуємо Polling (запит кожні 3 секунди)
-    // Це створює ефект Realtime
     const intervalId = setInterval(fetchLeaderboard, 3000);
-
-    // Очищаємо таймер, коли користувач йде зі сторінки
     return () => clearInterval(intervalId);
   }, []);
+
+  // --- ФУНКЦІЯ ЕКСПОРТУ В CSV ---
+  const downloadCSV = () => {
+    // 1. Створюємо заголовки колонок
+    const headers = ['Rank', 'Team Name', 'Captain Email', 'Tech Score', 'Func Score', 'UI Score', 'Total Score'];
+    
+    // 2. Формуємо рядки з даними
+    const csvRows = leaderboard.map((team, index) => [
+      index + 1,
+      `"${team.name}"`, // Беремо в лапки, щоб уникнути помилок з пробілами
+      team.captain || 'N/A',
+      team.tech || 0,
+      team.func || 0,
+      team.ui || 0,
+      team.total || 0
+    ]);
+
+    // 3. З'єднуємо все в один текст
+    const csvContent = [
+      headers.join(','),
+      ...csvRows.map(row => row.join(','))
+    ].join('\n');
+
+    // 4. Створюємо "невидимий" файл і завантажуємо його
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.setAttribute('href', url);
+    link.setAttribute('download', `Hackathon_Results_${new Date().toISOString().split('T')[0]}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
   return (
     <div className="min-h-screen text-slate-200 pb-20">
-      <header className="mb-12 relative flex justify-between items-end">
+      <header className="mb-12 relative flex flex-col md:flex-row md:justify-between md:items-end gap-4">
         <div className="relative">
           <div className="absolute -left-4 top-0 w-1 h-12 bg-purple-500 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.5)]"></div>
           <h1 className="text-4xl font-black text-white tracking-tight px-2 uppercase italic">RANKING <span className="text-purple-500">SYSTEM</span></h1>
           <p className="text-slate-500 mt-1 ml-2 text-[10px] uppercase tracking-[0.3em] font-bold">Final Tournament Standing</p>
         </div>
         
-        {/* ІНДИКАТОР REALTIME */}
-        <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg">
-            <span className="relative flex h-3 w-3">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
-            </span>
-            <span className="text-[10px] font-black uppercase tracking-widest">Live Updates</span>
+        {/* Кнопки справа */}
+        <div className="flex items-center gap-4">
+            <button 
+                onClick={downloadCSV}
+                className="flex items-center gap-2 px-4 py-2 bg-slate-800 hover:bg-purple-600 border border-white/10 hover:border-purple-500 text-slate-300 hover:text-white rounded-lg text-xs font-bold transition-all shadow-lg"
+            >
+                <Download size={16} /> Export CSV
+            </button>
+
+            <div className="flex items-center gap-3 px-4 py-2 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-lg">
+                <span className="relative flex h-3 w-3">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Live Updates</span>
+            </div>
         </div>
       </header>
 
+      {/* ... (решта коду таблиці залишається без змін) ... */}
       <div className="bg-[#0a0a0a] border border-white/5 rounded-[2.5rem] overflow-hidden shadow-2xl">
         <table className="w-full text-left">
           <thead>
@@ -77,7 +112,7 @@ function LeaderboardPage() {
                   <td className="px-6 py-8">
                     <div className="flex items-center gap-4">
                         <div className="w-10 h-10 rounded-xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400 font-black">
-                            {team.name[0]}
+                            {team.name ? team.name[0] : '?'}
                         </div>
                         <div>
                             <p className="font-black text-white text-lg tracking-tight uppercase group-hover:text-purple-400 transition-colors">{team.name}</p>
@@ -98,14 +133,14 @@ function LeaderboardPage() {
                   </td>
                 </tr>
                 
-                {/* Розгортання з деталями (Опціонально) */}
+                {/* Розгортання з деталями */}
                 {expandedTeam === team.id && (
                   <tr className="bg-black/50">
                     <td colSpan={4} className="px-20 py-8">
                         <div className="grid grid-cols-3 gap-8 animate-in slide-in-from-top-2 duration-300">
-                            <DetailBlock label="Technical Quality" val={team.tech} desc="Clean code, patterns, OOP, error handling" />
-                            <DetailBlock label="Logic & Functionality" val={team.func} desc="Must-have requirements, bug-free performance" />
-                            <DetailBlock label="Interface & UX" val={team.ui} desc="Aesthetics, usability, responsiveness" />
+                            <DetailBlock label="Technical Quality" val={team.tech} desc="Clean code, patterns, OOP" />
+                            <DetailBlock label="Logic & Functionality" val={team.func} desc="Must-have requirements, bug-free" />
+                            <DetailBlock label="Interface & UX" val={team.ui} desc="Aesthetics, usability" />
                         </div>
                     </td>
                   </tr>
