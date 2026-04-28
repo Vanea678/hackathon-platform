@@ -1,6 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
-import { LayoutDashboard, Users, Trophy, ClipboardCheck, Send, Medal, LogOut, Terminal } from 'lucide-react';
+import { LayoutDashboard, Users, Trophy, ClipboardCheck, Send, Medal, LogOut, Terminal, Archive } from 'lucide-react';
 
 function Sidebar() {
   const navigate = useNavigate();
@@ -10,6 +10,7 @@ function Sidebar() {
     { path: '/dashboard', name: 'Dashboard', icon: <LayoutDashboard size={18} /> },
     { path: '/tournaments', name: 'Tournaments', icon: <Trophy size={18} /> },
     { path: '/teams', name: 'Teams', icon: <Users size={18} /> },
+    { path: '/archives', name: 'Архів Турнірів', icon: <Archive size={18} /> },
     { path: '/submissions', name: 'Submissions', icon: <Send size={18} /> },
     { path: '/evaluation', name: 'Evaluation', icon: <ClipboardCheck size={18} /> },
     { path: '/leaderboard', name: 'Leaderboard', icon: <Medal size={18} /> },

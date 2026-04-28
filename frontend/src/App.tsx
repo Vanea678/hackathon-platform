@@ -10,6 +10,7 @@ import TournamentsPage from './pages/TournamentsPage';
 import SubmissionsPage from './pages/SubmissionsPage';
 import EvaluationPage from './pages/EvaluationPage';
 import LeaderboardPage from './pages/LeaderboardPage';
+import ArchivesPage from './pages/ArchivesPage';
 
 function App() {
   return (
@@ -23,6 +24,8 @@ function App() {
           <Route path="/teams" element={<TeamsPage />} />
           <Route path="/tournaments" element={<TournamentsPage />} />
           <Route path="/submissions" element={<SubmissionsPage />} />
+          <Route path="/archives" element={<ArchivesPage />} /> {/* 2. Додай маршрут */}
+
           <Route path="/evaluation" element={<EvaluationPage />} />
           <Route path="/leaderboard" element={<LeaderboardPage />} />
           <Route path="/" element={<Navigate to="/dashboard" replace />} />
