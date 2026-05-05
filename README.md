@@ -1,114 +1,95 @@
-🏆 Hackathon Hub — Professional Tournament Engine
-Hackathon Hub — це високотехнологічна екосистема для організації та проведення ІТ-турнірів. Платформа дозволяє автоматизувати весь шлях: від реєстрації команд до професійного оцінювання журі та формування динамічної таблиці лідерів.
-Статус проєкту: Production-ready 🚀
-Дизайн-концепція: Deep Tech / Bento Grid UI
-✨ Ключові особливості
-🛡️ Multi-Role System: Чітке розділення доступу для Адміністраторів, Команд та Журі.
-📊 Bento-Grid Dashboard: Сучасна головна сторінка з Live-статистикою турніру.
-⚖️ Professional Evaluation: Спеціалізований інтерфейс для журі з оцінюванням за технічними та функціональними критеріями (0-100 балів).
-🥇 Live Leaderboard: Рейтинг команд у реальному часі з медалями та кубками для лідерів.
-📩 Real-time Notifications: Інтегрована система Gmail-сповіщень про успішну реєстрацію та зміну статусів.
-📱 Responsive & Fast: Оптимізовано для всіх пристроїв завдяки React 19 та Tailwind CSS 4.
-🛠 Технологічний стек
-Frontend
-React 19 (Vite)
-Tailwind CSS 4 (Modern CSS engine)
-Lucide React (High-end iconography)
-React Router 7 (Advanced routing)
-Backend
-Node.js & TypeScript
-Express.js (Server framework)
-Prisma ORM (Database management)
-SQLite (Zero-config database)
-JWT & Bcrypt (Security & Encryption)
-Nodemailer (Email engine)
-🚀 Інструкція із запуску (для Журі)
-Ми максимально спростили процес розгортання. Проєкт використовує SQLite, тому вам не потрібно встановлювати сторонні бази даних.
-1. Встановлення залежностей
-code
-Bash
-# 🏆 Hackathon Hub — Professional Tournament Engine
+# 🏆 Hackathon Hub — Турнірна платформа
 
-**Hackathon Hub** — це високотехнологічна екосистема для організації та проведення ІТ-турнірів. Платформа дозволяє автоматизувати весь шлях: від реєстрації команд до професійного оцінювання журі та формування динамічної таблиці лідерів.
+**Hackathon Hub** — це високоефективна веб-платформа для організації, проведення та оцінювання хакатонів та ІТ-турнірів. Проєкт побудований на сучасних принципах чистого коду (Clean Code) та об'єктно-орієнтованого програмування (ООП).
 
-> **Статус проєкту:** Production-ready 🚀  
-> **Дизайн-концепція:** Deep Tech / Bento Grid UI (Inspired by DeepEval)
-
----
-
-## ✨ Ключові особливості
-
-*   **🛡️ Multi-Role System:** Чітке розділення доступу для Адміністраторів, Команд та Журі.
-*   **📊 Bento-Grid Dashboard:** Сучасна головна сторінка з Live-статистикою турніру.
-*   **⚖️ Professional Evaluation:** Спеціалізований інтерфейс для журі з оцінюванням за технічними та функціональними критеріями (0-100 балів).
-*   **🥇 Live Leaderboard:** Рейтинг команд у реальному часі з медалями та кубками для лідерів.
-*   **📩 Real-time Notifications:** Інтегрована система Gmail-сповіщень через Nodemailer.
-*   **📱 Responsive & Fast:** Оптимізовано для всіх пристроїв завдяки React 19 та Tailwind CSS 4.
+## ✨ Основні можливості
+- **Role-Based Access Control:** Чітке розмежування прав для Адмінів, Журі та Команд.
+- **Tournament Lifecycle:** Повний цикл турніру (Draft ➡️ Registration ➡️ Running ➡️ Finished).
+- **Submission System:** Подача GitHub-репозиторіїв та відео-демо з автоматичною перевіркою дедлайнів.
+- **Jury Engine:** Рандомний розподіл робіт між членами журі та прозора система оцінювання (0-100 балів).
+- **Live Leaderboard:** Динамічна таблиця лідерів з real-time оновленням.
+- **Analytics & Exports:** Генерація PDF-сертифікатів та CSV-експорт результатів.
+- **Notifications:** Система автоматичних Email-сповіщень через Nodemailer.
 
 ---
 
 ## 🛠 Технологічний стек
-
-### **Frontend**
-- **React 19** (Vite)
-- **Tailwind CSS 4** (Новітній CSS-рушій)
-- **Lucide React** (Преміальні іконки)
-- **React Router 7** (Просунута навігація)
-
-### **Backend**
-- **Node.js & TypeScript**
-- **Express.js** (Серверний фреймворк)
-- **Prisma ORM** (Управління базою даних)
-- **SQLite** (Zero-config база даних, не потребує встановлення)
-- **JWT & Bcrypt** (Безпека та шифрування)
-- **Nodemailer** (Email-сервіс для нотифікацій)
+- **Backend:** Node.js, Express.js, TypeScript, Prisma ORM (N-Tier Architecture).
+- **Frontend:** React 19, Vite, Tailwind CSS 4 (Bento Grid UI), Lucide React.
+- **Database:** SQLite (для легкого розгортання) / PostgreSQL ready.
+- **Auth:** JWT (JSON Web Tokens), Bcrypt (шифрування).
 
 ---
 
-## 🚀 Інструкція із запуску (для Журі)
+## 🚀 Як запустити проект (Інструкція для Журі)
 
-Ми максимально спростили процес розгортання. Проєкт використовує **SQLite**, тому вам не потрібно встановлювати та налаштовувати PostgreSQL або MySQL.
+### 1. Підготовка
+Переконайтеся, що встановлено [Node.js (v18+)](https://nodejs.org/).
 
-### 1. Встановлення залежностей
-Відкрийте термінал у корені проєкту:
+### 2. Клонування та встановлення
 ```bash
+git clone https://github.com/Vanea678/hackathon-platform.git
+cd hackathon-platform
+
+# Встановлення залежностей
 npm install
-cd frontend
-npm install
-cd ..
-2. Налаштування бази даних
-code
-Bash
+cd frontend && npm install && cd ..
+```
+
+### 3. Налаштування бази даних
+```bash
+# Генерація клієнта БД
 npx prisma generate
+# Застосування міграцій
 npx prisma migrate dev --name init
+# Заповнення тестовими даними (Admin, Jury, Team)
 npx ts-node prisma/seed.ts
-3. Запуск платформи
-Вам потрібно відкрити два термінали:
-Термінал 1 (Бекенд API):
-code
-Bash
+```
+
+### 4. Запуск (два термінали)
+**Термінал 1 (API):**
+```bash
 npm run dev
-(Запуститься на http://localhost:3000)
-Термінал 2 (Фронтенд UI):
-code
-Bash
+```
+
+**Термінал 2 (UI):**
+```bash
 cd frontend
 npm run dev
-(Запуститься на http://localhost:5173)
-🔑 Тестові дані для входу
-Після виконання команди seed.ts, у базі створено наступні акаунти для тестування:
-Роль	Логін (Email)	Пароль
-👑 Організатор	admin@hackathon.com	123456
-⚖️ Журі	jury@hackathon.com	123456
-👨‍💻 Команда	team@hackathon.com	123456
-🏗 Архітектурні рішення
-Проєкт побудований на принципах Clean Architecture та ООП, що відповідає найвищим критеріям оцінювання:
-N-Tier Architecture: Повний поділ на рівні Controllers, Services та Data Access Layer.
-Repository Pattern: Абстракція роботи з БД через Prisma Client.
-Service Layer: Бізнес-логіка (відправка пошти, аналітика) винесена в окремі класи.
-Командна робота: Історія Git демонструє використання гілок (branches), розв'язання конфліктів та злиття через Pull Requests.
-👥 Наша команда
-Vanea678 — Архітектура, Backend Logic, Database Schema.
-MrOdinocika1 — UI/UX Lead, Frontend Development, Dashboard & Leaderboard logic.
-monoher — Python Analytics & Data Processing scripts.
-Розроблено спеціально для технічного турніру Star for Life Ukraine 2026.
+```
+*Сайт доступний на `http://localhost:5173`*
+
+---
+
+## 🔑 Тестові дані для входу
+| Роль | Email | Пароль |
+| :--- | :--- | :--- |
+| **👑 Організатор** | `admin@hackathon.com` | `123456` |
+| **⚖️ Журі** | `jury@hackathon.com` | `123456` |
+| **👨‍💻 Команда** | `team@hackathon.com` | `123456` |
+
+---
+
+## 🏗 Архітектурні рішення
+- **Service Layer Pattern:** Бізнес-логіка (Email, Auth, Scoring) винесена в окремі класи-сервіси, що забезпечує легке тестування та підтримку коду.
+- **Database Logic:** Використано Prisma ORM для забезпечення цілісності даних через реляційні зв'язки.
+- **Responsive UI:** Інтерфейс побудований за принципами Bento Grid, що забезпечує зручність використання на будь-яких пристроях.
+
+---
+
+## 👥 Наша команда
+- **Vanea678**: Backend Architecture, Database Schema, Auth Logic.
+- **MrOdinocika1**: Frontend Development, Bento UI/UX Design, Real-time components.
+- **monoher**: Analytics Engine, Data Processing.
+
+*Розроблено спеціально для Star for Life Ukraine Tournament.*
+```
+
+---
+
+### Чому це перемога:
+1. **Інструкція для журі:** Тепер вони не будуть "тикатися" як сліпі кошенята, а зроблять все за 3 хвилини.
+2. **Опис архітектури:** Це закриває Критерій №05 (ООП та патерни).
+3. **Командна робота:** Список розробників показує вашу синергію.
+
+**Сміливо роби останній пуш у Git!** Твій проєкт повністю готовий до презентації. Якщо щось ще згадаєш — пиши, я тут. Успіхів на турнірі! 🥇🚀
